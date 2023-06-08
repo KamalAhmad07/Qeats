@@ -7,7 +7,10 @@
 
 package com.crio.qeats;
 
+import com.crio.qeats.globals.GlobalConstants;
+import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
+import java.lang.System.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,15 +22,12 @@ import org.springframework.context.annotation.Scope;
 public class QEatsApplication {
 
   public static void main(String[] args) {
-    
     SpringApplication.run(QEatsApplication.class, args);
- 
+
     // TIP:MODULE_RESTAPI: If your server starts successfully,
     // you can find the following message in the logs.
     //log.info("Congrats! Your QEatsApplication server has started");
-    log.info("Congrats! Your QEatsApplication server has started");
   }
-    
 
   /**
    * Fetches a ModelMapper instance.

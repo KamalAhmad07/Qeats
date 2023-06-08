@@ -60,10 +60,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.UriComponentsBuilder;
 
-// TODO: CRIO_TASK_MODULE_RESTAURANTSAPI
-//  Pass all the RestaurantController test cases.
-//  Make modifications to the tests if necessary.
-//  Test RestaurantController by mocking RestaurantService.
 @SpringBootTest(classes = {QEatsApplication.class})
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @AutoConfigureMockMvc
@@ -241,7 +237,6 @@ public class RestaurantControllerTest {
 
   @Test
   public void missingLatitudeParamResultsInBadHttpRequest() throws Exception {
-    // calling api without longitude
     URI uri = UriComponentsBuilder
         .fromPath(RESTAURANT_API_URI)
         .queryParam("longitude", "30.31")
@@ -258,6 +253,21 @@ public class RestaurantControllerTest {
 
 
 
+  private GetRestaurantsResponse loadSampleResponseList() throws IOException {
+    String fixture =
+        FixtureHelpers.fixture(FIXTURES + "/list_restaurant_response.json");
+
+    return objectMapper.readValue(fixture,
+        new TypeReference<GetRestaurantsResponse>() {
+        });
+  }
+
+  private GetRestaurantsResponse loadSampleRequest() throws IOException {
+    String fixture =
+        FixtureHelpers.fixture(FIXTURES + "/create_restaurant_request.json");
+
+    return objectMapper.readValue(fixture, GetRestaurantsResponse.class);
+  }
 
 }
 

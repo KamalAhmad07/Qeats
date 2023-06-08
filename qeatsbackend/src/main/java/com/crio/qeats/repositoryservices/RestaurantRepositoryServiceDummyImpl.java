@@ -15,9 +15,10 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
-import org.springframework.stereotype.Service;
 
-@Repository
+
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 public class RestaurantRepositoryServiceDummyImpl implements RestaurantRepositoryService {
   private static final String FIXTURES = "fixtures/exchanges";
@@ -53,9 +54,56 @@ public class RestaurantRepositoryServiceDummyImpl implements RestaurantRepositor
   }
 
 
+  public List<Restaurant> findRestaurantsByName(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+        
+    return null;
+  }
+
+  public List<Restaurant> findRestaurantsByAttributes(
+      Double latitude, Double longitude, String searchString,
+      LocalTime currentTime, Double servingRadiusInKms) {
+    return null;
+  }
+
+  public List<Restaurant> findRestaurantsByItemName(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    return null;
+  }
+
+  public List<Restaurant> findRestaurantsByItemAttributes(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    return null;
+  }
+
+  @Override
+  public Future<List<Restaurant>> findRestaurantsByNameAsync(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Future<List<Restaurant>> findRestaurantsByAttributesAsync(Double latitude,
+      Double longitude, String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Future<List<Restaurant>> findRestaurantsByItemNameAsync(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Future<List<Restaurant>> findRestaurantsByItemAttributesAsync(Double latitude,
+      Double longitude, String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 
 }
-
-
-
 

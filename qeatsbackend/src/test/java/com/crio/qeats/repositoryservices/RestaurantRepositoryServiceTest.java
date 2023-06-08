@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.crio.qeats.QEatsApplication;
+import com.crio.qeats.configs.RedisConfiguration;
 import com.crio.qeats.dto.Restaurant;
 import com.crio.qeats.models.RestaurantEntity;
 import com.crio.qeats.repositories.RestaurantRepository;
@@ -34,7 +35,6 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -64,19 +64,26 @@ public class RestaurantRepositoryServiceTest {
   @MockBean
   private RestaurantRepository restaurantRepository;
 
+  @Autowired
+  private RedisConfiguration redisConfiguration;
 
   @Value("${spring.redis.port}")
   private int redisPort;
 
   private RedisServer server = null;
 
+  @BeforeEach
+  public void setupRedisServer() throws IOException {
+    System.out.println("Redis port = " + redisPort);
+    redisConfiguration.setRedisPort(redisPort);
+  }
 
 
   @BeforeEach
   void setup() throws IOException {
     allRestaurants = listOfRestaurants();
     for (RestaurantEntity restaurantEntity : allRestaurants) {
-       mongoTemplate.save(restaurantEntity, "restaurants");
+      mongoTemplate.save(restaurantEntity, "restaurants");
     }
     when(restaurantRepository.findAll()).thenReturn(allRestaurants);
   }
@@ -84,6 +91,7 @@ public class RestaurantRepositoryServiceTest {
   @AfterEach
   void teardown() {
     mongoTemplate.dropCollection("restaurants");
+    redisConfiguration.destroyCache();
   }
 
   @Test
@@ -104,13 +112,12 @@ public class RestaurantRepositoryServiceTest {
 
   @Test
   void noRestaurantsNearBy(@Autowired MongoTemplate mongoTemplate) {
-   
     assertNotNull(mongoTemplate);
     assertNotNull(restaurantRepositoryService);
 
     List<Restaurant> allRestaurantsCloseBy = restaurantRepositoryService
         .findAllRestaurantsCloseBy(20.9, 30.0, LocalTime.of(18, 00), 3.0);
-      
+
     ModelMapper modelMapper = modelMapperProvider.get();
     assertEquals(0, allRestaurantsCloseBy.size());
   }
@@ -140,15 +147,45 @@ public class RestaurantRepositoryServiceTest {
   }
 
 
+  @Test
+  void findRestaurantsByName(@Autowired MongoTemplate mongoTemplate) {
+    assertNotNull(mongoTemplate);
+    assertNotNull(restaurantRepositoryService);
+
+    doReturn(Optional.of(allRestaurants))
+        .when(restaurantRepository).findRestaurantsByNameExact(any());
+
+    String searchFor = "A2B";
+    List<Restaurant> foundRestaurantsList = restaurantRepositoryService
+        .findRestaurantsByName(20.8, 30.1, searchFor,
+            LocalTime.of(20, 0), 5.0);
+
+    assertEquals(2, foundRestaurantsList.size());
+  }
+
+  @Test
+  void foundRestaurantsExactMatchesFirst(@Autowired MongoTemplate mongoTemplate) {
+    assertNotNull(mongoTemplate);
+    assertNotNull(restaurantRepositoryService);
+
+    doReturn(Optional.of(allRestaurants))
+        .when(restaurantRepository).findRestaurantsByNameExact(any());
+    String searchFor = "A2B";
+    List<Restaurant> foundRestaurantsList = restaurantRepositoryService
+        .findRestaurantsByName(20.8, 30.1, searchFor,
+            LocalTime.of(20, 0), 5.0);
+
+    assertEquals(2, foundRestaurantsList.size());
+    assertEquals("A2B", foundRestaurantsList.get(0).getName());
+    assertEquals("A2B Adyar Ananda Bhavan", foundRestaurantsList.get(1).getName());
+  }
 
 
 
   void searchedAttributesIsSubsetOfRetrievedRestaurantAttributes() {
-    // TODO
   }
 
   void searchedAttributesIsCaseInsensitive() {
-    // TODO
   }
 
   private List<RestaurantEntity> listOfRestaurants() throws IOException {
